@@ -1,0 +1,95 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import Heading from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { columns } from "./columns";
+import { DataTable } from "@/components/ui/data-table";
+import { ApiList } from "@/components/ui/api-list";
+import { supabase } from "@/lib/supabase";
+
+export const PacienteClient = () => {
+  const router = useRouter();
+
+  // Estado para armazenar os pacientes e o erro
+  const [pacientes, setPacientes] = useState<any[]>([]);
+  const [profissionais, setProfissionais] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Carregar os dados dos pacientes e profissionais quando o componente for montado
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true); // Inicia o carregamento
+
+        // Consulta para obter os pacientes
+        const { data: pacientesData, error: pacientesError } = await supabase
+          .from("pacientes")
+          .select("*");
+
+        if (pacientesError) throw new Error(pacientesError.message);
+
+        // Para cada paciente, buscar o profissional relacionado
+        const pacientesComProfissional = await Promise.all(
+          pacientesData.map(async (paciente: any) => {
+            const { data: profissionalData, error: profissionalError } =
+              await supabase
+                .from("profissionais")
+                .select("*")
+                .eq("cpf", paciente.cpf_profissional)
+                .single(); // Usamos single() porque esperamos um único profissional para cada paciente
+
+            if (profissionalError) {
+              paciente.profissional = null; // Em caso de erro, definimos o profissional como null
+            } else {
+              paciente.profissional = profissionalData; // Vinculamos o profissional ao paciente
+            }
+
+            return paciente;
+          })
+        );
+
+        setPacientes(pacientesComProfissional); // Atualiza o estado com os pacientes e seus respectivos profissionais
+      } catch (error: any) {
+        setError(error.message || "Erro ao carregar dados.");
+      } finally {
+        setLoading(false); // Termina o carregamento
+      }
+    };
+
+    fetchData(); // Chama a função para carregar os dados
+  }, []);
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <Heading
+          title={`Pacientes`}
+          description="Gerencie os pacientes da sua clínica."
+        />
+        <Button onClick={() => router.push(`/pacientes/new`)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Adicionar Novo
+        </Button>
+      </div>
+      <Separator />
+
+      {loading ? (
+        <p>Carregando...</p> // Exibe um texto enquanto os dados estão sendo carregados
+      ) : error ? (
+        <p className="text-red-500">{error}</p> // Exibe o erro se houver
+      ) : (
+        <DataTable searchKey="nome" columns={columns} data={pacientes} />
+      )}
+
+      <Heading title="API" description="API para chamar o Paciente" />
+      <Separator />
+      <ApiList entityName="pacientes" entityIdName="pacienteId" />
+    </>
+  );
+};
