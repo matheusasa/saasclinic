@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 
 export type ProfissionalsColumn = {
-  id_profissional: string;
+  cpf: string;
   nome: string;
   email: string;
   especialidade: string;

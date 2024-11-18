@@ -31,7 +31,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onConfirm = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/profissionais/${data.id_profissional}`);
+      await axios.delete(`/api/profissionais/${data.cpf}`);
       toast.success("Profissional deletado com sucesso!.");
       router.refresh();
       router.push(`/profissionais`);
@@ -67,13 +67,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Acoes</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onCopy(data.id_profissional)}>
+          <DropdownMenuItem onClick={() => onCopy(data.cpf)}>
             <Copy className="mr-2 h-4 w-4" /> Copiar Id
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() =>
-              router.push(`/profissionals/${data.id_profissional}`)
-            }
+            onClick={() => router.push(`/profissionals/${data.cpf}`)}
           >
             <Edit className="mr-2 h-4 w-4" /> Atualizar
           </DropdownMenuItem>

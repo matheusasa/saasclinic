@@ -34,8 +34,9 @@ const formSchema = z.object({
 type ProfissionalFormValues = z.infer<typeof formSchema>;
 
 interface ProfissionalFormProps {
-  initialData: Profissional[]; // Lista de profissionals (pode ser vazia inicialmente)
-  // Lista de profissionais para o select
+  initialData: Profissional[];
+  profissionais: any[];
+  profissionaluser: any;
 }
 
 export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
