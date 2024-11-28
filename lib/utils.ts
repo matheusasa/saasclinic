@@ -20,3 +20,7 @@ export async function convertBlobUrlToFile(blobUrl: string) {
   });
   return file;
 }
+
+export const urlsupa = {
+  url: "http://supabase.mtswebsft.online",
+};

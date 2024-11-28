@@ -36,11 +36,14 @@ export const AgendamentoClient: React.FC<AgendamentoClientProps> = ({
     profissionalNome: getProfissionalNome(agendamento.cpf_profissional),
   }));
 
+  const agendamentosComStatusFalse = agendamentosComNomes.filter(
+    (agendamento) => agendamento.status === false
+  );
   return (
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`Agendamentos Abertos (${agendamentosComNomes.length})`}
+          title={`Agendamentos Abertos (${agendamentosComStatusFalse.length})`}
           description="Gerencie os agendamentos da sua clínica."
         />
       </div>
@@ -48,7 +51,7 @@ export const AgendamentoClient: React.FC<AgendamentoClientProps> = ({
       <DataTable
         searchKey="pacienteNome"
         columns={columns}
-        data={agendamentosComNomes} // Passando os dados com os nomes
+        data={agendamentosComStatusFalse} // Passando os dados com os nomes
       />
     </>
   );

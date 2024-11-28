@@ -11,6 +11,8 @@ import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
 import { supabase } from "@/lib/supabase";
+import { urlsupa } from "@/lib/utils";
+import axios from "axios";
 
 export const PacienteClient = () => {
   const router = useRouter();
@@ -27,16 +29,21 @@ export const PacienteClient = () => {
       try {
         setLoading(true); // Inicia o carregamento
 
-        // Consulta para obter os pacientes
-        const { data: pacientesData, error: pacientesError } = await supabase
-          .from("pacientes")
-          .select("*");
-
-        if (pacientesError) throw new Error(pacientesError.message);
+        let configpaciente = {
+          method: "get",
+          maxBodyLength: Infinity,
+          url: `${urlsupa.url}/rest/v1/pacientes?select=*`,
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+        };
+        const responsepaciente = await axios.request(configpaciente); // Espera pela resposta da API
+        const pacientes1 = responsepaciente.data; // Armazena os dados da API
 
         // Para cada paciente, buscar o profissional relacionado
         const pacientesComProfissional = await Promise.all(
-          pacientesData.map(async (paciente: any) => {
+          pacientes1.map(async (paciente: any) => {
             const { data: profissionalData, error: profissionalError } =
               await supabase
                 .from("profissionais")

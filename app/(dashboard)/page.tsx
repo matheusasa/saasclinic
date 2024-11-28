@@ -5,6 +5,8 @@ import { Heading } from "@/components/ui/heading";
 import { supabase } from "@/lib/supabase";
 import { AgendamentoClient } from "./(routes)/components/client";
 import ActionsAtalhos from "./(routes)/components/actions";
+import { urlsupa } from "@/lib/utils";
+import axios from "axios";
 
 interface DashboardPageProps {
   params: {
@@ -13,31 +15,41 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
-  let { data: agendamentos, error: agendamentosError } = await supabase
-    .from("agendamentos")
-    .select("*")
-    .eq("status", false);
+  let configagenda = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/agendamentos?select=*`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responseagenda = await axios.request(configagenda); // Espera pela resposta da API
+  const agendamentos = responseagenda.data; // Armazena os dados da API
 
-  if (agendamentosError) throw new Error(agendamentosError.message);
+  let configpaciente = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/pacientes?select=*`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responsepaciente = await axios.request(configpaciente); // Espera pela resposta da API
+  const pacientes = responsepaciente.data; // Armazena os dados da API
 
-  // Consulta para buscar os pacientes
-  let { data: pacientes, error: pacientesError } = await supabase
-    .from("pacientes")
-    .select("*");
-
-  if (pacientesError) throw new Error(pacientesError.message);
-
-  // Consulta para buscar os profissionais
-  let { data: profissionais, error: profissionaisError } = await supabase
-    .from("profissionais")
-    .select("*");
-
-  if (profissionaisError) throw new Error(profissionaisError.message);
-
-  // Garantir que as variáveis de dados nunca sejam null
-  agendamentos = agendamentos ?? [];
-  pacientes = pacientes ?? [];
-  profissionais = profissionais ?? [];
+  let configprof = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/profissionais?select=*`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responseprof = await axios.request(configprof); // Espera pela resposta da API
+  const profissionais = responseprof.data; // Armazena os dados da API
 
   return (
     <div className="flex-col">

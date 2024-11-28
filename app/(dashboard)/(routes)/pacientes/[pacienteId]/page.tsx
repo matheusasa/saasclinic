@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { PacienteForm } from "./components/paciente-form";
+import axios from "axios";
+import { urlsupa } from "@/lib/utils";
 
 interface PacientesPageProps {
   params: {
@@ -9,13 +11,18 @@ interface PacientesPageProps {
 
 const PacientesPage = async ({ params }: PacientesPageProps) => {
   const { pacienteId } = params;
-  const { data: todosProfissionais, error: profissionaisError } = await supabase
-    .from("profissionais")
-    .select("*");
 
-  if (profissionaisError) {
-    throw new Error(profissionaisError.message);
-  }
+  let configprof = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/profissionais?select=*`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responseprof = await axios.request(configprof); // Espera pela resposta da API
+  const profissionais = responseprof.data; // Armazena os dados da API
 
   // Caso de criação de um novo paciente
   if (pacienteId === "new") {
@@ -24,44 +31,43 @@ const PacientesPage = async ({ params }: PacientesPageProps) => {
         <div className="flex-1 space-y-4 p-8 pt-6">
           <PacienteForm
             initialData={[]}
-            profissionais={todosProfissionais}
+            profissionais={profissionais}
             profissionaluser={null}
           />
         </div>
       </div>
     );
   }
-
-  // Caso de visualização ou edição de paciente existente
-  const { data, error } = await supabase
-    .from("pacientes")
-    .select("*")
-    .eq("cpf", pacienteId)
-    .single();
-  // 2. Buscar dados do profissional associado ao paciente
-  const { data: profissionalData, error: profissionalError } = await supabase
-    .from("profissionais")
-    .select("*")
-    .eq("cpf", data.cpf_profissional)
-    .single(); // Espera apenas um profissional
-
-  if (error || !data) {
-    return (
-      <div className="p-8 pt-6">
-        <h1 className="text-red-500">
-          Erro: Paciente não encontrado ou ocorreu um problema.
-        </h1>
-      </div>
-    );
-  }
+  let configpaci = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/pacientes?select=*&cpf=${pacienteId}`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responsepacient = await axios.request(configpaci); // Espera pela resposta da API
+  const paciente = responsepacient.data; // Armazena os dados da API
+  let configprofi = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: `${urlsupa.url}/rest/v1/profissionais?select=*&cpf=${paciente.cpf_profissional}`,
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+    },
+  };
+  const responseprofi = await axios.request(configprofi); // Espera pela resposta da API
+  const profissionaiss = responseprofi.data; // Armazena os dados da API
 
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <PacienteForm
-          initialData={data}
-          profissionais={todosProfissionais}
-          profissionaluser={profissionalData}
+          initialData={paciente}
+          profissionais={profissionais}
+          profissionaluser={profissionaiss}
         />
       </div>
     </div>
