@@ -45,6 +45,7 @@ const formSchema = z.object({
   email: z.string().email(),
   cpf_profissional: z.string().min(1, { message: "Selecione um profissional" }),
   cpf: z.string().min(9), // Novo campo para o profissional
+  telefone: z.string().min(11),
 });
 
 type PacienteFormValues = z.infer<typeof formSchema>;
@@ -278,6 +279,23 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
                     <Input
                       disabled={loading}
                       placeholder="Email do paciente"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="telefone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Telefone com DDD</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="11912345678"
                       {...field}
                     />
                   </FormControl>

@@ -19,7 +19,7 @@ const AgendamentosPage = async () => {
   let configpaciente = {
     method: "get",
     maxBodyLength: Infinity,
-    url: `${urlsupa.url}/rest/v1/agendamentos?select=*`,
+    url: `${urlsupa.url}/rest/v1/pacientes?select=*`,
     headers: {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -31,7 +31,7 @@ const AgendamentosPage = async () => {
   let configprof = {
     method: "get",
     maxBodyLength: Infinity,
-    url: `${urlsupa.url}/rest/v1/agendamentos?select=*`,
+    url: `${urlsupa.url}/rest/v1/profissionais?select=*`,
     headers: {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,

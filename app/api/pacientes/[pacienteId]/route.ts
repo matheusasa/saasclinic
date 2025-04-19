@@ -30,7 +30,8 @@ export async function PATCH(
   try {
     const body = await req.json();
 
-    const { nome, email, data_nascimento, cpf_profissional, cpf } = body;
+    const { nome, email, data_nascimento, cpf_profissional, cpf, telefone } =
+      body;
     const supabase = await createClient();
     const {
       data: { user },
@@ -64,6 +65,11 @@ export async function PATCH(
         status: 400,
       });
     }
+    if (!telefone) {
+      return new NextResponse("Campo obrigatório não preenchido", {
+        status: 400,
+      });
+    }
 
     if (!params.pacienteId) {
       return new NextResponse("PacienteId é necessario!", { status: 400 });
@@ -71,7 +77,7 @@ export async function PATCH(
 
     const { data, error } = await supabase
       .from("pacientes")
-      .update({ nome, email, data_nascimento, cpf_profissional, cpf })
+      .update({ nome, email, data_nascimento, cpf_profissional, cpf, telefone })
       .eq("cpf", params.pacienteId)
       .select();
 
