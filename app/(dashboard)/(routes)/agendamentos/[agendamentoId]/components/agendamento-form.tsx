@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerWithInput } from "@/components/date-picker-with-input";
 
 const formSchema = z.object({
   cpf_paciente: z.string().min(1),
@@ -36,6 +37,7 @@ const formSchema = z.object({
   horario_entrada: z.string(),
   horario_saida: z.string(),
   id_sala: z.string().min(1),
+  dia: z.date().optional(), // Campo opcional para a data
 });
 
 type AgendamentoFormValues = z.infer<typeof formSchema>;
@@ -109,6 +111,7 @@ export const AgendamentoForm: React.FC<AgendamentoFormProps> = ({
             horario_entrada: initialData.horario_entrada,
             horario_saida: initialData.horario_saida,
             id_sala: initialData.id_sala,
+            dia: initialData.dia,
           }
         : {
             cpf_paciente: "",
@@ -123,11 +126,8 @@ export const AgendamentoForm: React.FC<AgendamentoFormProps> = ({
     // Adiciona o campo 'dia' com o valor da data atual
     const dataComDia = {
       ...data,
-      dia: new Date(),
       status: false, // Adiciona o valor atual da data
     };
-
-    console.log("Dados com dia: ", dataComDia); // Verifique se 'dia' foi adicionado corretamente
 
     try {
       if (initialData && initialData.id) {
@@ -260,6 +260,19 @@ export const AgendamentoForm: React.FC<AgendamentoFormProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex space-x-[100px] w-[800px]">
+            <FormField
+              control={form.control}
+              name="dia"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-1/3">
+                  <FormLabel>Data da agenda</FormLabel>
+                  <DatePickerWithInput field={field} {...field} />
                   <FormMessage />
                 </FormItem>
               )}

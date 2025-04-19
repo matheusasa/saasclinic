@@ -27,7 +27,6 @@ import axios from "axios";
 const formSchema = z.object({
   nome: z.string().min(1, "O nome é obrigatório."),
   local: z.string().min(1, "O local é obrigatório."),
-  fotos: z.array(z.string()).min(1, "Pelo menos uma foto é necessária."),
   valor: z.number().min(1, "O valor deve ser positivo."),
 });
 
@@ -43,9 +42,6 @@ export const SalaForm: React.FC<SalaFormProps> = ({ initialData }) => {
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imageUrls, setImageUrls] = useState<string[]>([]); // URLs das imagens para pré-visualização
-  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); // Armazenar URLs das fotos enviadas
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const title =
     initialData && initialData.length > 0 ? "Editar sala" : "Criar sala";
@@ -65,13 +61,11 @@ export const SalaForm: React.FC<SalaFormProps> = ({ initialData }) => {
         ? {
             nome: initialData[0].nome,
             local: initialData[0].local,
-            fotos: initialData[0].fotos,
             valor: initialData[0].valor,
           }
         : {
             nome: "",
             local: "",
-            fotos: [],
             valor: 0,
           },
   });
@@ -101,10 +95,6 @@ export const SalaForm: React.FC<SalaFormProps> = ({ initialData }) => {
             uploadedUrls.push(url); // Adiciona a URL ao array
           }
         }
-
-        setUploadedPhotos(uploadedUrls); // Atualiza as fotos enviadas
-        form.setValue("fotos", uploadedUrls); // Atualiza o campo 'fotos' do formulário
-        toast.success("Imagens carregadas com sucesso!");
       } catch (error) {
         console.error(error);
         toast.error("Erro inesperado ao fazer upload das imagens.");
@@ -224,40 +214,6 @@ export const SalaForm: React.FC<SalaFormProps> = ({ initialData }) => {
               );
             }}
           />
-
-          <FormField
-            control={form.control}
-            name="fotos"
-            render={() => (
-              <FormItem>
-                <FormLabel>Fotos</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    disabled={loading}
-                    onChange={handleFileChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Exibe a pré-visualização das imagens selecionadas */}
-          <div className="flex gap-4">
-            {imageUrls.map((url, index) => (
-              <Image
-                key={index}
-                src={url}
-                width={150}
-                height={150}
-                alt={`img-preview-${index}`}
-                className="rounded-md"
-              />
-            ))}
-          </div>
 
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}

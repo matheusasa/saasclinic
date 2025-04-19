@@ -41,7 +41,7 @@ const PacientesPage = async ({ params }: PacientesPageProps) => {
   let configpaci = {
     method: "get",
     maxBodyLength: Infinity,
-    url: `${urlsupa.url}/rest/v1/pacientes?select=*&cpf=${pacienteId}`,
+    url: `${urlsupa.url}/rest/v1/pacientes?select=*&cpf=eq.${pacienteId}`,
     headers: {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -52,7 +52,7 @@ const PacientesPage = async ({ params }: PacientesPageProps) => {
   let configprofi = {
     method: "get",
     maxBodyLength: Infinity,
-    url: `${urlsupa.url}/rest/v1/profissionais?select=*&cpf=${paciente.cpf_profissional}`,
+    url: `${urlsupa.url}/rest/v1/profissionais?select=*&cpf=eq.${paciente.cpf_profissional}`,
     headers: {
       apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -60,7 +60,6 @@ const PacientesPage = async ({ params }: PacientesPageProps) => {
   };
   const responseprofi = await axios.request(configprofi); // Espera pela resposta da API
   const profissionaiss = responseprofi.data; // Armazena os dados da API
-
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

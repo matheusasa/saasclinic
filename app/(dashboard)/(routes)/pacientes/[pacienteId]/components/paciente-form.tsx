@@ -37,6 +37,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns"; // Certifique-se de importar a função format
+import { DatePickerWithInput } from "@/components/date-picker-with-input";
 
 const formSchema = z.object({
   nome: z.string().min(1),
@@ -61,7 +62,7 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
 }) => {
   const params = useParams();
   const router = useRouter();
-
+  const [date, setDate] = useState<Date>();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -183,42 +184,9 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
             control={form.control}
             name="data_nascimento"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col w-1/3">
                 <FormLabel>Data de nascimento</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Escolha uma data</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormDescription>
-                  Sua data de nascimento é usada para calcular sua idade.
-                </FormDescription>
+                <DatePickerWithInput field={field} {...field} />
                 <FormMessage />
               </FormItem>
             )}
