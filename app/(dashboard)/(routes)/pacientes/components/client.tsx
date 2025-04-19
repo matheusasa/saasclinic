@@ -76,7 +76,7 @@ export const PacienteClient = () => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`Pacientes`}
+          title={`Pacientes (${pacientes.length})`}
           description="Gerencie os pacientes da sua clínica."
         />
         <Button onClick={() => router.push(`/pacientes/new`)}>

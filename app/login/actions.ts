@@ -1,15 +1,21 @@
+// app/actions/auth.ts
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/utils/supabase/server";
 
-export async function login(formData: FormData) {
+export type AuthResponse = {
+  error?: {
+    message: string;
+    code?: string;
+  };
+  success?: boolean;
+};
+
+export async function login(formData: FormData): Promise<AuthResponse> {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -18,18 +24,23 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    return {
+      error: {
+        message: error.message,
+        code: error.status?.toString(),
+      },
+    };
   }
 
   revalidatePath("/", "layout");
   redirect("/");
+  // O redirect vai impedir que o código chegue aqui, mas precisamos retornar algo
+  return { success: true };
 }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData): Promise<AuthResponse> {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -38,13 +49,18 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect("/error");
+    return {
+      error: {
+        message: error.message,
+        code: error.status?.toString(),
+      },
+    };
   }
 
   revalidatePath("/", "layout");
   redirect("/");
+  return { success: true };
 }
-
 export async function logout() {
   const supabase = await createClient();
 

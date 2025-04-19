@@ -38,6 +38,7 @@
     "react-hook-form": "^7.49.2",
     "react-hot-toast": "^2.4.1",
     "recharts": "^2.10.4",
+    "sonner": "^2.0.3",
     "stripe": "^14.13.0",
     "supabase": "^1.219.2",
     "tailwind-merge": "^2.2.0",

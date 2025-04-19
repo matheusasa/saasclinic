@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, SetStateAction } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -203,7 +203,7 @@ export const AgendamentoForm: React.FC<AgendamentoFormProps> = ({
                   <FormLabel>Profissional</FormLabel>
                   <Select
                     disabled={loading}
-                    onValueChange={(value) => {
+                    onValueChange={(value: SetStateAction<string>) => {
                       setSelectedProfissional(value); // Atualiza o profissional selecionado
                       field.onChange(value); // Atualiza o valor no formulário
                     }}

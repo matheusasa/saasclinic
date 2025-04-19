@@ -9,49 +9,59 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { login, signup } from "../actions";
+import { login, signup, AuthResponse } from "../actions";
+import { toast } from "sonner";
 
-const Loginclient = () => {
+const LoginClient = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
+  const handleAuthAction = async (
+    action: (formData: FormData) => Promise<AuthResponse>,
+    successMessage: string
+  ) => {
     setIsLoading(true);
+    setError(null);
+
     try {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
-      await login(formData);
-      router.push("/"); // Redireciona para a página inicial após o login
+
+      const result = await action(formData);
+
+      if (result?.error) {
+        setError(result.error.message);
+        toast.error(result.error.message);
+      } else {
+        toast.success(successMessage);
+        // O redirecionamento está sendo feito pela Server Action
+      }
     } catch (error) {
-      console.error("Erro no login:", error);
+      console.error("Erro:", error);
+      setError("Ocorreu um erro inesperado");
+      toast.error("Ocorreu um erro inesperado");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSignup = async (e: any) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("password", password);
-      await signup(formData);
-      router.push("/"); // Redireciona para a página inicial após o cadastro
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    await handleAuthAction(login, "Login realizado com sucesso!");
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleAuthAction(signup, "Cadastro realizado com sucesso!");
   };
 
   return (
@@ -62,6 +72,11 @@ const Loginclient = () => {
           <CardDescription>Faça login ou crie uma nova conta</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
           <Tabs defaultValue="login">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
@@ -140,4 +155,4 @@ const Loginclient = () => {
   );
 };
 
-export default Loginclient;
+export default LoginClient;

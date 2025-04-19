@@ -22,5 +22,5 @@ export async function convertBlobUrlToFile(blobUrl: string) {
 }
 
 export const urlsupa = {
-  url: "http://supabase.mtswebsft.online",
+  url: "https://supabase.mtswebsft.online",
 };

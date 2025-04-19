@@ -39,27 +39,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Upload do arquivo no armazenamento
-    const { data, error } = await supabase.storage
-      .from("clinica")
-      .upload(
-        `Profissional/${nome}-${cpf}/placeholder.txt`,
-        new Blob(["Profissional criado com sucesso"]),
-        {
-          cacheControl: "3600",
-          upsert: false,
-        }
-      );
-
-    // Verificar se houve erro ao fazer o upload do arquivo
-    if (error) {
-      console.log(`[ERROR] File Upload Error: ${error.message}`);
-      return new NextResponse(
-        `Erro ao fazer upload do arquivo: ${error.message}`,
-        { status: 500 }
-      );
-    }
-
     // Resposta de sucesso com os dados do profissional
     return NextResponse.json(profissionalData);
   } catch (error) {
